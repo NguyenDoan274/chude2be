@@ -1,29 +1,23 @@
+name: Deploy to Hosting
 on:
   push:
     branches:
       - main
-name: 🚀 Deploy website on push
 jobs:
   web-deploy:
-    name: 🎉 Deploy
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
+    - name: Get latest code
       uses: actions/checkout@v4
-
-    # - name: 🔨 Build Project (Phần này để cài thư viện trước khi đẩy lên)
-      # run: |
-      #    composer inst  all --no-dev --optimize-autoloader
 
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
+      with: 
+        server: ${{ secrets.BACK_FTP_SERVER }}
+        username: ${{ secrets.BACK_FTP_USERNAME }}
+        password: ${{ secrets.BACK_FTP_PASSWORD }}
         protocol: ftps
-        port: 22
-        timeout: 120000
-        # Thư mục đích trên iNET (thường code nằm trong public_html)
+        port: 21
+        # Đường dẫn trên host muốn lưu code (thường là public_html)
         server-dir: /domains/nhom15be.doanlehoangnguyen.id.vn/
-        
