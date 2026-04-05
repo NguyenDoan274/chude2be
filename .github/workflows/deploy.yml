@@ -14,9 +14,9 @@ jobs:
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with: 
-        server: ${{ secrets.BACK_FTP_SERVER }}
-        username: ${{ secrets.BACK_FTP_USERNAME }}
-        password: ${{ secrets.BACK_FTP_PASSWORD }}
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
         protocol: ftps
         port: 21
         # Đường dẫn trên host muốn lưu code (thường là public_html)
