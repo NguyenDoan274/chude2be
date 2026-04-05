@@ -21,8 +21,9 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        protocol: ftps
+        protocol: ftp
         port: 21
+        secure: false
         timeout: 60000
         # Thư mục đích trên iNET (thường code nằm trong public_html)
         server-dir: /domains/bookstore.doanlehoangnguyen.id.vn/public_html/
