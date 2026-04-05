@@ -1,0 +1,32 @@
+on:
+  push:
+    branches:
+      - main
+name: 🚀 Deploy website on push
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
+
+    - name: 🔨 Build Project (Phần này để cài thư viện trước khi đẩy lên)
+      run: |
+        composer install --no-dev --optimize-autoloader
+
+    - name: Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        protocol: ftps
+        port: 21
+        # Thư mục đích trên iNET (thường code nằm trong public_html)
+        server-dir: /domains/bookstore.doanlehoangnguyen.id.vn/
+        exclude: |
+          **/.git*
+          **/node_modules/**
+          **/tests/**
+          .env
