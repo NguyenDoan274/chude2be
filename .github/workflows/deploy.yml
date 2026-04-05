@@ -11,9 +11,9 @@ jobs:
     - name: 🚚 Get latest code
       uses: actions/checkout@v4
 
-    - name: 🔨 Build Project (Phần này để cài thư viện trước khi đẩy lên)
+    # - name: 🔨 Build Project (Phần này để cài thư viện trước khi đẩy lên)
       # run: |
-      #    composer install --no-dev --optimize-autoloader
+      #    composer inst  all --no-dev --optimize-autoloader
 
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
