@@ -21,14 +21,9 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        protocol: ftps
+        protocol: ftp
         port: 21
         timeout: 120000
         # Thư mục đích trên iNET (thường code nằm trong public_html)
         server-dir: /domains/nhom15be.doanlehoangnguyen.id.vn/
-        exclude: |
-          **/.git*
-          **/node_modules/**
-          **/tests/**
-          **/vendor/**
-          .env
+        
