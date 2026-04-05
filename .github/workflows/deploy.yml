@@ -22,7 +22,7 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         protocol: ftps
-        port: 21
+        port: 22
         timeout: 120000
         # Thư mục đích trên iNET (thường code nằm trong public_html)
         server-dir: /domains/nhom15be.doanlehoangnguyen.id.vn/
