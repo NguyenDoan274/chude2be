@@ -6,11 +6,9 @@ use App\Models\MonHoc;
 use Illuminate\Http\Request;
 use App\Imports\MonHocImport;
 use Maatwebsite\Excel\Facades\Excel;
+
 class MonHocController extends Controller
 {
-    /**
-     * Hiển thị danh sách môn học
-     */
     public function index(Request $request)
     {
         $query = MonHoc::query();
@@ -21,53 +19,44 @@ class MonHocController extends Controller
                 ->orWhere('ten_mon', 'like', "%{$search}%");
         }
 
-        $monHocs = $query->orderBy('id', 'desc')->get(); // Sắp xếp mới nhất lên trên
+        $monHocs = $query->orderBy('id', 'desc')->get();
 
-        return view('monhoc.index', compact('monHocs'),['hideSearch' => true]);
+        return response()->json([
+            'status' => 'success',
+            'data' => $monHocs
+        ], 200);
     }
 
-    /**
-     * Form tạo môn học
-     */
-    public function create()
-    {
-        return view('monhoc.create',['hideSearch' => true]);
-    }
-
-    /**
-     * Lưu môn học mới
-     */
     public function store(Request $request)
     {
         $request->validate([
             'ma_mon'  => 'required|unique:mon_hocs,ma_mon',
             'ten_mon' => 'required',
-        ],[
-            'ma_mon.unique' => '⚠️ Mã môn đã tồn tại trong hệ thống!',
+        ], [
+            'ma_mon.unique' => 'Mã môn đã tồn tại trong hệ thống!',
         ]);
 
-        MonHoc::create([
+        $monHoc = MonHoc::create([
             'ma_mon'  => $request->ma_mon,
             'ten_mon' => $request->ten_mon,
         ]);
 
-        return redirect()
-            ->route('monhoc.index')
-            ->with('success', 'Thêm môn học thành công!');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Thêm môn học thành công!',
+            'data' => $monHoc
+        ], 201);
     }
 
-    /**
-     * Form chỉnh sửa môn học
-     */
-    public function edit($id)
+    public function show($id)
     {
         $monHoc = MonHoc::findOrFail($id);
-        return view('monhoc.edit', compact('monHoc'),['hideSearch' => true]);
+        return response()->json([
+            'status' => 'success',
+            'data' => $monHoc
+        ], 200);
     }
 
-    /**
-     * Cập nhật môn học
-     */
     public function update(Request $request, $id)
     {
         $monHoc = MonHoc::findOrFail($id);
@@ -75,8 +64,8 @@ class MonHocController extends Controller
         $request->validate([
             'ma_mon'  => 'required|unique:mon_hocs,ma_mon,' . $monHoc->id,
             'ten_mon' => 'required',
-        ],[
-            'ma_mon.unique' => '⚠️ Mã môn đã tồn tại trong hệ thống!',
+        ], [
+            'ma_mon.unique' => 'Mã môn đã tồn tại trong hệ thống!',
         ]);
 
         $monHoc->update([
@@ -84,41 +73,38 @@ class MonHocController extends Controller
             'ten_mon' => $request->ten_mon,
         ]);
 
-        return redirect()
-            ->route('monhoc.index')
-            ->with('success', 'Cập nhật môn học thành công!');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Cập nhật môn học thành công!',
+            'data' => $monHoc
+        ], 200);
     }
 
-    /**
-     * Xóa môn học
-     */
     public function destroy($id)
     {
-        $monhoc = Monhoc::findOrFail($id);
+        $monhoc = MonHoc::findOrFail($id);
 
-        // ❗ Kiểm tra nghiệp vụ
-        if ($monhoc->lichThis()
-            ->whereIn('trang_thai', ['dang_dien_ra', 'chua_dien_ra'])
-            ->exists()
-        ) {
-            return redirect()->back()->with(
-                'error',
-                'Không thể xóa môn học vì có lịch thi đang diễn ra hoặc chưa diễn ra'
-            );
+        if ($monhoc->lichThis()->whereIn('trang_thai', ['dang_dien_ra', 'chua_dien_ra'])->exists()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Không thể xóa môn học vì có lịch thi đang hoặc chưa diễn ra'
+            ], 400);
         }
 
         try {
             $monhoc->delete();
-            return redirect()
-                ->route('monhoc.index')
-                ->with('success', 'Xóa môn học thành công');
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Xóa môn học thành công'
+            ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect()->back()->with(
-                'error',
-                'Không thể xóa môn học vì còn dữ liệu lịch sử liên quan'
-            );
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Không thể xóa môn học vì còn dữ liệu lịch sử liên quan'
+            ], 400);
         }
     }
+
     public function import(Request $request)
     {
         $request->validate([
@@ -127,7 +113,9 @@ class MonHocController extends Controller
 
         Excel::import(new MonHocImport, $request->file('file'));
 
-        return redirect()->route('monhoc.index')
-                        ->with('success', 'Import danh sách môn học thành công!');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Import danh sách môn học thành công!'
+        ], 200);
     }
 }

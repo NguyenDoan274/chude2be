@@ -3,7 +3,7 @@
 return [
 
     'defaults' => [
-        'guard' => 'giangvien',
+        'guard' => 'sanctum',
         'passwords' => 'giangviens',
     ],
 
@@ -12,6 +12,10 @@ return [
         'driver' => 'session',
         'provider' => 'users',
     ],
+    'sanctum' => [
+            'driver' => 'sanctum',
+            'provider' => 'giangviens',
+        ],
         'giangvien' => [
             'driver' => 'session',
             'provider' => 'giangviens',

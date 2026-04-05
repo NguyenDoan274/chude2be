@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\GiangVien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -8,82 +9,86 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function showLoginForm()
-    {
-        return view('auth.login');
-    }
+    // Xóa hàm showLoginForm()
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        $giangvien = GiangVien::where('email', $credentials['email'])->first();
+        $giangvien = GiangVien::where('email', $request->email)->first();
 
-        if ($giangvien && Hash::check($credentials['password'], $giangvien->password)) {
-            Auth::guard('giangvien')->login($giangvien);
-            $request->session()->regenerate();
-            return redirect()->route('home.index');
+        // Kiểm tra user và pass
+        if (!$giangvien || !Hash::check($request->password, $giangvien->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Email hoặc mật khẩu không chính xác.'
+            ], 401); // 401 Unauthorized
         }
 
-        return back()->withErrors([
-            'login_error' => 'Email hoặc mật khẩu không chính xác.',
-        ])->withInput();
+        // Tạo Access Token (yêu cầu cài Laravel Sanctum)
+        $token = $giangvien->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Đăng nhập thành công',
+            'data' => [
+                'user' => $giangvien,
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ]
+        ], 200);
     }
 
     public function logout(Request $request)
     {
-        Auth::guard('giangvien')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Xóa token hiện tại của user đang gọi request
+        $request->user()->currentAccessToken()->delete();
 
-        return redirect()->route('login');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Đăng xuất thành công'
+        ], 200);
     }
 
-    public function profile()
+    public function profile(Request $request)
     {
-        $user = Auth::user();
-
-        return view('auth.profile', compact('user'),['hideSearch' => true]);
+        // $request->user() sẽ lấy ra user tương ứng với token gửi lên
+        return response()->json([
+            'status' => 'success',
+            'data' => clone $request->user()
+        ], 200);
     }
 
-        // Hiển thị form đổi mật khẩu
-    public function showChangePasswordForm()
-    {
-        $user = Auth::guard('giangvien')->user();
-        return view('auth.changePassword', compact('user'));
-    }
+    // Xóa hàm showChangePasswordForm()
 
-    // Xử lý cập nhật mật khẩu
     public function updatePassword(Request $request)
     {
-        $user = Auth::guard('giangvien')->user();
+        $user = $request->user();
 
         $request->validate([
             'current_password' => 'required',
             'new_password' => 'required|string|min:6|confirmed',
-        ], [
-            'new_password.min' => '🔒 Mật khẩu mới cần ít nhất 6 ký tự.',
-            'new_password.confirmed' => '🔒 Mật khẩu không trùng khớp.',
         ]);
 
-        // Kiểm tra mật khẩu cũ
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Mật khẩu cũ không đúng']);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Mật khẩu cũ không đúng'
+            ], 400);
         }
 
-        // Cập nhật mật khẩu mới
         $user->password = Hash::make($request->new_password);
         $user->save();
 
-        // ✅ Đăng xuất sau khi đổi mật khẩu
-        Auth::guard('giangvien')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Xóa toàn bộ token cũ bắt đăng nhập lại
+        $user->tokens()->delete();
 
-        // Chuyển về trang login
-        return redirect()->route('login')->with('success', '🔒 Đổi mật khẩu thành công! Vui lòng đăng nhập lại.');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Đổi mật khẩu thành công! Vui lòng đăng nhập lại.'
+        ], 200);
     }
 }

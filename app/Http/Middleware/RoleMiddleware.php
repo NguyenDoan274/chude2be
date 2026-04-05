@@ -10,10 +10,13 @@ class RoleMiddleware
 {
     public function handle(Request $request, Closure $next, $role)
     {
-        $user = Auth::guard('giangvien')->user();
+        $user = $request->user();
 
         if (!$user || $user->vai_tro != $role) {
-            abort(403, 'Bạn không có quyền truy cập');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Bạn không có quyền truy cập'
+            ], 403);
         }
 
         return $next($request);
