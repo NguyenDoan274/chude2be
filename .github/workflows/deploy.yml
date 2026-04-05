@@ -21,3 +21,6 @@ jobs:
         port: 21
         # Đường dẫn trên host muốn lưu code (thường là public_html)
         server-dir: /domains/nhom15be.doanlehoangnguyen.id.vn/
+
+        exclude : |
+          **/favicon.ico
