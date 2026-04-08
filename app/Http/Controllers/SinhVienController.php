@@ -22,8 +22,8 @@ class SinhVienController extends Controller
                 ->orWhere('lop', 'like', "%{$search}%");
         }
 
-        $sinhviens = $query->orderBy('ma_sv', 'asc')->paginate(20);
-        
+        // $sinhviens = $query->orderBy('ma_sv', 'asc')->paginate(20);
+        $sinhviens = $query->orderBy('ma_sv', 'asc')->get();
         return response()->json([
             'status' => 'success',
             'data' => $sinhviens
@@ -71,6 +71,15 @@ class SinhVienController extends Controller
             'message' => 'Thêm sinh viên thành công!',
             'data' => $sinhvien
         ], 201); // 201 Created
+    }
+
+        public function show($id)
+    {
+        $sinhvien = SinhVien::findOrFail($id);
+        return response()->json([
+            'status' => 'success',
+            'data' => $sinhvien
+        ], 200);
     }
 
     // Cập nhật sinh viên

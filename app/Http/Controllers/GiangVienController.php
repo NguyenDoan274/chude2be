@@ -18,7 +18,8 @@ class GiangVienController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where('ho_ten', 'like', "%{$search}%");
+            $query->where('ho_ten', 'like', "%{$search}%")
+                  ->orWhere('ma_gv', 'like', "%{$search}%"); // Tìm theo cả mã cho tiện
         }
 
         $giangviens = $query->orderBy('id', 'desc')->get();
@@ -31,12 +32,22 @@ class GiangVienController extends Controller
 
     public function store(Request $request)
     {
+        // THÊM THÔNG BÁO LỖI TIẾNG VIỆT
         $request->validate([
             'ma_gv'    => 'required|unique:giang_viens',
             'ho_ten'   => 'required',
             'email'    => 'required|email|unique:giang_viens',
             'password' => 'required|min:6',
             'vai_tro'  => 'required',
+        ], [
+            'ma_gv.required' => 'Không được để trống Mã giảng viên.',
+            'ma_gv.unique'   => 'Mã giảng viên này đã tồn tại trong hệ thống!',
+            'ho_ten.required'=> 'Không được để trống Họ tên.',
+            'email.required' => 'Không được để trống Email.',
+            'email.unique'   => 'Email này đã có người sử dụng!',
+            'password.required'=> 'Không được để trống Mật khẩu.',
+            'password.min'   => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'vai_tro.required'=> 'Vui lòng chọn Vai trò cho giảng viên.',
         ]);
 
         $giangvien = GiangVien::create([
@@ -67,15 +78,27 @@ class GiangVienController extends Controller
     {
         $giangvien = GiangVien::findOrFail($id);
 
+        // THÊM THÔNG BÁO LỖI TIẾNG VIỆT VÀ KIỂM TRA MÃ TRÙNG
         $request->validate([
             'ma_gv' => ['required', Rule::unique('giang_viens')->ignore($giangvien->id)],
             'ho_ten' => 'required',
             'email' => ['required', 'email', Rule::unique('giang_viens')->ignore($giangvien->id)],
+            'vai_tro' => 'required',
+        ], [
+            'ma_gv.required' => 'Không được để trống Mã giảng viên.',
+            'ma_gv.unique'   => 'Mã giảng viên này đã trùng với người khác. Vui lòng nhập mã khác!',
+            'ho_ten.required'=> 'Không được để trống Họ tên.',
+            'email.required' => 'Không được để trống Email.',
+            'email.unique'   => 'Email này đã có người sử dụng!',
+            'vai_tro.required'=> 'Vui lòng chọn Vai trò.',
         ]);
 
+        // ĐÃ SỬA LỖI Ở ĐÂY: Thêm ma_gv và vai_tro vào lệnh update
         $giangvien->update([
-            'ho_ten' => $request->ho_ten,
-            'email'  => $request->email,
+            'ma_gv'   => $request->ma_gv,
+            'ho_ten'  => $request->ho_ten,
+            'email'   => $request->email,
+            'vai_tro' => $request->vai_tro,
         ]);
 
         return response()->json([
@@ -145,8 +168,7 @@ class GiangVienController extends Controller
             ->where('ngay_thi', $lichthi->ngay_thi)
             ->where('gio_thi', $lichthi->gio_thi)
             ->exists();
-
-        if($exists){
+            if($exists){
             return response()->json([
                 'status' => 'conflict',
                 'message' => 'Giảng viên đã có lịch thi cùng thời gian!'
