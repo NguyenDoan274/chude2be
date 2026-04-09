@@ -72,17 +72,17 @@ class DiemDanhController extends Controller
         ], 200);
     }
 
-    public function import(Request $request)
-    {
-        $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
+    // public function import(Request $request)
+    // {
+    //     $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
 
-        try {
-            Excel::import(new DiemDanhImport, $request->file('file'));
-            return response()->json(['status' => 'success', 'message' => 'Import danh sách điểm danh thành công!'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Lỗi khi import: ' . $e->getMessage()], 500);
-        }
-    }
+    //     try {
+    //         Excel::import(new DiemDanhImport, $request->file('file'));
+    //         return response()->json(['status' => 'success', 'message' => 'Import danh sách điểm danh thành công!'], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['status' => 'error', 'message' => 'Lỗi khi import: ' . $e->getMessage()], 500);
+    //     }
+    // }
 
     public function destroy($id)
     {

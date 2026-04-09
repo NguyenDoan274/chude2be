@@ -20,7 +20,6 @@ Hệ thống cho phép:
 - PHP
 - Laravel
 - MySQL
-- Bootstrap
 - AWS S3
 - AWS Rekognition
 - AWS SDK for PHP
@@ -46,47 +45,12 @@ Hệ thống cho phép:
 ### Giảng viên
 - Điểm danh cho sinh viên bằng nhận diện khuôn mặt
 
-## Demo
-
-Website:  
-https://sonnguyenhungthanh.io.vn
-
-Tài khoản demo:
-
-Admin  
-email: test@gmail.com  
-password: 123123
-
-Giảng viên
-email: bb@gmail.com
-password: 111111
-
-## Hình ảnh hệ thống
-
-### Trang chủ
-![Home](public/images/home.png)
-
-### Dashboard Admin
-![Dashboard](public/images/dashboard.png)
-
-### TrainImages
-![Train](public/images/train.png)
-
-### Quản lý sinh viên
-![Students](public/images/students.png)
-
-### Thực hiện điểm danh sinh viên
-![Thông tin phòng thi](public/images/phongthi.png)
-![Thực hiện điểm danh](public/images/diemdanh.png)
-
-### Kết quả điểm danh
-![Result](public/images/result.png)
 
 ## Cài đặt project
 
 Clone project
 
-git clone https://github.com/Thanhson10/diemdanh-hinhanh.git
+git clone https://github.com/NguyenDoan274/chude2be
 
 Cài đặt thư viện
 
@@ -140,6 +104,4 @@ The following environment variables are required:
 
 ## Tác giả
 
-Nguyễn Hùng Thanh Sơn
-
-Sinh viên ngành Công nghệ Thông tin
+Nhóm 15 môn xây dựng phần mềm web
