@@ -22,8 +22,7 @@ class SinhVienController extends Controller
                 ->orWhere('lop', 'like', "%{$search}%");
         }
 
-        // $sinhviens = $query->orderBy('ma_sv', 'asc')->paginate(20);
-        $sinhviens = $query->orderBy('ma_sv', 'asc')->get();
+        $sinhviens = $query->orderBy('ma_sv', 'asc')->paginate(20);
         return response()->json([
             'status' => 'success',
             'data' => $sinhviens
