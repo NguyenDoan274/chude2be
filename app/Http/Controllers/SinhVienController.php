@@ -51,7 +51,7 @@ class SinhVienController extends Controller
         $data = $request->except(['lop_y', 'lop_z', 'hinh_anh']);
         $data['lop'] = $lop;
 
-        $uploadPath = $_SERVER['DOCUMENT_ROOT'] . "/uploads/hinhanh_sv/{$folder}";
+        $uploadPath = public_path("uploads/hinhanh_sv/{$folder}");
         if (!file_exists($uploadPath)) {
             mkdir($uploadPath, 0755, true);
         }
@@ -105,7 +105,7 @@ class SinhVienController extends Controller
         $data = $request->except(['hinh_anh', 'xoa_anh', 'lop_y', 'lop_z']);
         $data['lop'] = $lop;
 
-        $basePath = $_SERVER['DOCUMENT_ROOT'] . '/uploads/hinhanh_sv';
+        $basePath = public_path('uploads/hinhanh_sv');
         $oldPath  = $basePath . '/' . $oldFolder;
         $newPath  = $basePath . '/' . $newFolder;
 
@@ -145,7 +145,7 @@ class SinhVienController extends Controller
         $sinhvien = SinhVien::findOrFail($id);
 
         if ($sinhvien->hinh_anh) {
-            $imagePath = $_SERVER['DOCUMENT_ROOT'] . '/' . $sinhvien->hinh_anh;
+            $imagePath = public_path($sinhvien->hinh_anh);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
