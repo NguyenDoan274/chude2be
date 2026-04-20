@@ -178,7 +178,7 @@ class RekognitionController extends Controller
                 ];
             }
 
-            session(["faces_{$lichThi->id}" => $faces]);
+            // session(["faces_{$lichThi->id}" => $faces]);
             return response()->json(['faces' => $faces]);
 
         } catch (\Throwable $e) {
@@ -186,41 +186,78 @@ class RekognitionController extends Controller
         }
     }
 
-    public function confirmMany(Request $request, LichThi $lichThi)
-    {
-        $request->validate(['faces' => 'required|json']);
-        $faceIndexes = json_decode($request->faces, true);
-        $faces = session("faces_{$lichThi->id}", []);
+    // public function confirmMany(Request $request, LichThi $lichThi)
+    // {
+    //     $request->validate(['faces' => 'required|json']);
+    //     $faceIndexes = json_decode($request->faces, true);
+    //     $faces = session("faces_{$lichThi->id}", []);
 
-        foreach ($faceIndexes as $idx) {
-            if (!isset($faces[$idx])) continue;
-            $face = $faces[$idx];
+    //     foreach ($faceIndexes as $idx) {
+    //         if (!isset($faces[$idx])) continue;
+    //         $face = $faces[$idx];
 
-            if (!$face['valid'] || !$face['name']) continue;
+    //         if (!$face['valid'] || !$face['name']) continue;
 
-            $sv = SinhVien::where('ma_sv', $face['name'])->first();
+    //         $sv = SinhVien::where('ma_sv', $face['name'])->first();
 
+    //         DiemDanh::where('sinh_vien_id', $sv->id)
+    //             ->where('lich_thi_id', $lichThi->id)
+    //             ->update([
+    //                 'ket_qua' => 'hợp lệ',
+    //                 'do_chinh_xac' => $face['similarity'],
+    //                 'thoi_gian_dd' => now(),
+    //             ]);
+
+    //         $faces[$idx]['checkedIn'] = true;
+    //         $faces[$idx]['color'] = 'yellow';
+    //     }
+
+    //     session(["faces_{$lichThi->id}" => $faces]);
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Điểm danh thành công',
+    //         'data' => $faces
+    //     ]);
+    // }
+
+ public function confirmMany(Request $request, LichThi $lichThi)
+{
+    // Frontend sẽ gửi lên mảng 'detected_faces' chứa thông tin sv
+    $request->validate([
+        'detected_faces' => 'required|array',
+    ]);
+
+    $faces = $request->detected_faces;
+    $count = 0;
+
+    foreach ($faces as $face) {
+        // Chỉ xử lý những khuôn mặt hợp lệ và có tên (MSSV)
+        if (!isset($face['valid']) || !$face['valid'] || empty($face['name'])) {
+            continue;
+        }
+
+        $sv = SinhVien::where('ma_sv', $face['name'])->first();
+
+        if ($sv) {
+            // Cập nhật bảng điểm danh
             DiemDanh::where('sinh_vien_id', $sv->id)
                 ->where('lich_thi_id', $lichThi->id)
                 ->update([
                     'ket_qua' => 'hợp lệ',
-                    'do_chinh_xac' => $face['similarity'],
+                    'do_chinh_xac' => $face['similarity'] ?? 100,
                     'thoi_gian_dd' => now(),
+                    'hinh_thuc_dd' => 'Khuôn mặt'
                 ]);
-
-            $faces[$idx]['checkedIn'] = true;
-            $faces[$idx]['color'] = 'yellow';
+            $count++;
         }
-
-        session(["faces_{$lichThi->id}" => $faces]);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Điểm danh thành công',
-            'data' => $faces
-        ]);
     }
 
+    return response()->json([
+        'status' => 'success',
+        'message' => "Đã điểm danh thành công {$count} sinh viên.",
+    ]);
+}
     public function getAttendanceData(Request $request, LichThi $lichThi)
     {
         $query = DiemDanh::with('sinhVien')->where('lich_thi_id', $lichThi->id);
