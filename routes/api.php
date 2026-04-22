@@ -69,8 +69,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/lichthi/{id}/phancong', [LichThiController::class, 'phanCongSave']);
 
         // Rekognition (AWS Face) - Admin
-        Route::post('/rekognition/upload', [RekognitionController::class, 'train']);
-        Route::delete('/rekognition/delete/{studentId}', [RekognitionController::class, 'deleteStudent']);
         Route::post('/rekognition/train-ajax', [RekognitionController::class, 'trainAjax']);
         Route::post('/rekognition/retrain-ajax', [RekognitionController::class, 'retrainAjax']);
     });
