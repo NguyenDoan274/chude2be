@@ -174,7 +174,8 @@ class RekognitionController extends Controller
             foreach ($body['unknownFaces'] as $u) {
                 $faces[] = [
                     'box' => ['x' => $u['box']['left'], 'y' => $u['box']['top'], 'width' => $u['box']['width'], 'height' => $u['box']['height']],
-                    'name' => null, 'ho_ten' => null, 'similarity' => null, 'valid' => false, 'checkedIn' => false, 'color' => 'red'
+                    'name' => null, 'ho_ten' => null, 'similarity' => null, 'valid' => false, 'checkedIn' => false, 'color' => 'red',
+                    'reason' => $u['reason'] ?? null
                 ];
             }
 
