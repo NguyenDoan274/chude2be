@@ -97,6 +97,7 @@ class GiangVienController extends Controller
         $giangvien->update([
             'ma_gv'   => $request->ma_gv,
             'ho_ten'  => $request->ho_ten,
+            'password' => Hash::make($request->password),
             'email'   => $request->email,
             'vai_tro' => $request->vai_tro,
         ]);
