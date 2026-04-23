@@ -80,6 +80,10 @@ class RekognitionController extends Controller
                 return response()->json(['success' => false, 'message' => 'Sinh viên đã có mẫu khuôn mặt']);
             }
 
+            if (!$sv->da_train_khuon_mat && $force) {
+                return response()->json(['success' => false, 'message' => 'Sinh viên này chưa có mẫu khuôn mặt để train lại. Vui lòng sử dụng tính năng Train mới.']);
+            }
+            
             if ($force && !$sv->canRetrain()) {
                 return response()->json(['success' => false, 'message' => 'Chưa đủ điều kiện train lại', 'can_retrain' => false]);
             }
