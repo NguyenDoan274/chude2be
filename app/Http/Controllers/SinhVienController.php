@@ -158,32 +158,6 @@ class SinhVienController extends Controller
         ], 200);
     }
 
-    // Import file Excel
-    public function import(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls'
-        ]);
-
-        $import = new SinhVienImport();
-        Excel::import($import, $request->file('file'));
-
-        $failures = $import->failures();
-
-        if ($failures->isNotEmpty()) {
-            return response()->json([
-                'status' => 'warning',
-                'message' => 'Import hoàn tất nhưng có một số dòng bị lỗi!',
-                'failures' => $failures
-            ], 422);
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Import danh sách sinh viên thành công!'
-        ], 200);
-    }
-
     // Trả về JSON, giữ nguyên
     public function searchByList(Request $request)
     {

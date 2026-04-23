@@ -119,20 +119,6 @@ class GiangVienController extends Controller
         ], 200);
     }
 
-    public function import(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
-
-        Excel::import(new GiangVienImport, $request->file('file'));
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Import giảng viên thành công!'
-        ], 200);
-    }
-
     public function phancong(GiangVien $giangvien, Request $request)
     {
         $lichDaPhanCongIds = $giangvien->lichthis()->pluck('lich_thi_id');

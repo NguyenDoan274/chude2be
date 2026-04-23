@@ -105,17 +105,4 @@ class MonHocController extends Controller
         }
     }
 
-    public function import(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
-
-        Excel::import(new MonHocImport, $request->file('file'));
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Import danh sách môn học thành công!'
-        ], 200);
-    }
 }
