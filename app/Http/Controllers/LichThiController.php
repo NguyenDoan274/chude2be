@@ -167,12 +167,6 @@ class LichThiController extends Controller
         ], 200);
     }
 
-    public function import(Request $request)
-    {
-        $request->validate(['file' => 'required|mimes:xlsx,xls']);
-        Excel::import(new LichThiImport, $request->file('file'));
-        return response()->json(['status' => 'success', 'message' => 'Import lịch thi thành công!'], 200);
-    }
 
     public function phanCongForm($id) { 
         $lichThi = LichThi::with('phanCongGVs')->findOrFail($id); 
